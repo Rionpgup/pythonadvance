@@ -1,8 +1,9 @@
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
 
-df = pd.read_csv('your_dataset.csv', parse_dates=['Date'])
+df = pd.read_csv('weather_tokyo_data.csv')
 
 
 df = df[['Date', 'Temperature']]
