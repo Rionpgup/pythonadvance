@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, conint, constr
 from typing import Optional
-#
+
 # class User(BaseModel):
 #     id: int
 #     name: str
@@ -8,28 +8,34 @@ from typing import Optional
 #     email: str
 #
 # #validation
-#
-# user = User(id=1, name="John Doe", age=30, email="jon.doe@gmail.com")
+# user = User(id=1, name= 'John Doe', age=30, email='john.doe@example.com')
 
 #default values and optional fields
 class User(BaseModel):
     id: int
     name: str
     age: Optional[int] = None
-    email : Optional[str] = None
+    email: Optional[str] = None
 
-user1 = User(id=1, name="John Doe", age=30, email="jon.doe@gmail.com")
+user1 = User(id=1, name= 'John Doe', age=30, email='john.doe@example.com')
 print(user1)
-user2 = User(id=2, name="Jane", age=None, email="jane@gmail.com")
+
+user2 = User(id=2, name= 'Jane', age=None, email='jane@example.com')
 print(user2)
-user3 = User(id=3, name="Charlie", age=30)
+
+user3 = User(id=3, name='Charlie', age=30)
 print(user3)
+
 user4 = User(id=4, name="John")
 print(user4)
-#field constraints
-class another_user(BaseMOdel):
-    id: conint(gt=0)
-    name: constr(nin_length=2, max_length=50)
 
-    valid_user = another_user(id=1, name="ALice")
-    print(valid_user)
+#field constraints
+class another_user(BaseModel):
+    id: conint(gt=0)
+    name: constr(min_length=2, max_length=50)
+
+valid_user = another_user(id=1, name='Alice')
+print(valid_user)
+
+# invalid_user = another_user(id=0, name="Alice")
+# print(invalid_user)
