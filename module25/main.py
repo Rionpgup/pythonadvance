@@ -1,9 +1,14 @@
+from fastapi import FastAPI, HTTPException
+from typing import List
+import database
+import models
+from models import Movie, MovieCreate
 from http.client import HTTPException
 
-from fastapi import FastAPI
 
-from module25 import database
-from module25.models import Movie
+
+
+
 
 app = FastAPI()
 
@@ -22,7 +27,7 @@ def create_movie(movie: MovieCreate):
 @app.get("/movies/", response_model=List[Movie])
 def read_movies():
     """Retrieves all movies from the database"""
-return database.read_movies()
+    return database.read_movies()
 
 @app.get("/movies/{movie_id}", response_model=Movie)
 def read_movie(movie_id: int):
@@ -31,3 +36,20 @@ def read_movie(movie_id: int):
     if movie in None:
         raise HTTPException(status_code=404, detail="Movie not found")
     return movie
+
+@app.put("/movies/{movie_id}", response_model=Movie)
+def update_movie(movie_id: int, movie: MovieCreate):
+    updated = database.update_movie(movie_id, movie)
+
+
+    if not updated:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return models.Movie(id=movie_id, **movie.dict())
+
+@app.delete("/movies/{movie_id}", response_model=Movie)
+def delete_movie(movie_id: int):
+    deleted = database.delete_movie(movie_id)
+
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return {"message": "Movie deleted successfully"}
