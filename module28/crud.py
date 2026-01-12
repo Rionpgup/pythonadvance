@@ -16,9 +16,9 @@ def create_item(item: Item) -> Item:
     conn.commit()
 
 
-item.id = cursor.lastrowid
-conn.close()
-return item
+    item.id = cursor.lastrowid
+    conn.close()
+    return item
 
 
 def get_items() -> List[Item]:
@@ -53,8 +53,8 @@ def update_item(item_id: int, item: Item) -> Optional[Item]:
         return None
 
 
-item.id = item_id
-return item
+    item.id = item_id
+    return item
 
 
 def delete_item(item_id: int) -> bool:
