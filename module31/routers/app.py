@@ -91,3 +91,102 @@ def delete_book(api_key, book_id):
         st.success("Book deleted successfully!")
     else:
         st.error(f"Failed to delete book: {response.json().get('detail', 'Unknown error')}")
+
+def dashboard_author(api_key):
+    st.title("Authors Dashboard")
+    st.subheader("Authors Dashboard")
+    authors = get_authors()
+    df_authors = pd.DataFrame(authors)
+    st.dataframe(df_authors,use_container_width=True)
+
+    st.subheader("Books Dashboard")
+    new_author_name = st.text_input("Author Name")
+
+    if st.button("add author"):
+        if new_author_name.strip():
+            add_author(api_key, new_author_name)
+        else:
+            st.error("Author name cannot be blank")
+
+    action = st.radio('Select Action',opinions=['Update','Delete'])
+
+    if action == 'Update Author':
+        selected_author = st.selectbox('Select Author',options=[author['name'] for author in authors])
+
+        id st.button("Update Author")
+             author_id = next((author['id']for author in authors if author['name'] for author in authors])
+        update_author(api_key, author_id, new_name)
+    elif action == 'Delete Author':
+        author_to_delete = st.selectbox("Author to delete",options=[author['name'] for author in author in authors])
+        author_id = next((author['id']for author in authors if author['name']==author_to_delete),None)
+        delete_author(api_key, author_id)
+
+        st.subheader('Existing Books')
+        books = get_books()
+        author = get_authors()
+
+        author_id_to_name = author_id_to_name.get(book['author'], 'Unknown Author')
+        for book in books:
+            book['author']
+            book['author_name'] =  author_id_to_name.get(book['author'], 'Unknown Author')
+            book['genres'] = ', '.join(book['genres'])
+            del book['author_id']
+
+            df_books = pd.DataFrame(books)
+            st.dataframe(df_books,use_container_width=True)
+
+            if st.button('Add Book'):
+                if new_book_title.strip() and new_book_genres.strip():
+                    genres_list = [g.strip() for g in new_book_genres.split(',') if g.strip()]
+                    selected_author_id = next((author['id'] for author in author if author['name'] == selected_author),
+                                              None)
+
+                    book_data = {
+                        "title": new_book_title,
+                        "author": selected_author_id,
+                        "book_link":"",
+                        "average_rating": new_book_average,
+                        "genres": genres_list,
+                        "publication_year": new_book_year
+                    }
+
+                    add_book(api_key, book_data)
+
+else:
+    st.error("Book title and genres cannot be empty")
+
+action = st.radio('Select Action', options=['Update Book', 'Delete Book'], key='book_action')
+
+if action == 'Update Book':
+    selected_book = st.selectbox(
+        'Select Book to Update',
+        options=[book['title'] for book in books],
+        key='select_book_update'
+    )
+
+    if selected_book:
+        book = next((book for book in books if book['title'] == selected_book), None)
+
+        new_book_title = st.text_input('Book Title', value=book['title'])
+        selected_author_name = st.selectbox(
+            'Select Author',
+            options=[author['name'] for author in author],
+            index=[author['name'] for author in author].index(book['author_name'])
+        )
+        new_book_average_rating = st.number_input(
+            'Average Rating',
+            min_value=0,
+            max_value=5.0,
+            step=0.5,
+            value=book['average_rating']
+        )
+        new_book_genres = st.text_input('Genres (comma separated)', value=book['genres'])
+        new_book_year = st.number_input(
+            'Publication Year',
+            min_value=1440,
+            max_value=datetime.now().year,
+            step=1,
+            value=book['publication_year']
+        )
+
+        book_id = book['id']
